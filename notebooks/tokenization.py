@@ -7,11 +7,17 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import nltk
 from nltk import word_tokenize
 from scipy.cluster.hierarchy import dendrogram, linkage
 from scipy.spatial.distance import squareform
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
+
+
+nltk.download("punkt_tab")
+nltk.download("stopwords")
+nltk.download("wordnet")
 
 # Given a filepath, you can open the file and use the `read` method to extract the contents as a string.
 
@@ -31,9 +37,7 @@ book[-18420:-18000]
 
 # **Hint:** You might want to make use of the [`re.search`](https://docs.python.org/3/library/re.html#re.search) function from the `re` library.
 
-start_pattern = (
-    r"\*\*\* START OF THE PROJECT GUTENBERG EBOOK WAR AND PEACE \*\*\*"
-)
+start_pattern = r"\*\*\* START OF THE PROJECT GUTENBERG EBOOK WAR AND PEACE \*\*\*"
 end_pattern = r"\*\*\* END OF THE PROJECT GUTENBERG EBOOK WAR AND PEACE \*\*\*"
 start = re.search(start_pattern, book)
 end = re.search(end_pattern, book)
@@ -75,8 +79,7 @@ print(filepath)
 # It would be nice to save the title of each book without the extra pieces around it. Write code that will remove the "books/" from the front of the filepath and the ".txt" from the end. That is, we want to extract just the "Little Women by Louisa May Alcott" from the current filepath.
 
 titles = [
-    f.replace("../books/", "").replace(".txt", "")
-    for f in glob.glob("../books/*.txt")
+    f.replace("../books/", "").replace(".txt", "") for f in glob.glob("../books/*.txt")
 ]
 # titles
 
@@ -84,8 +87,7 @@ titles = [
 
 filepaths = glob.glob("../books/*.txt")
 titles = [
-    f.replace("../books/", "").replace(".txt", "")
-    for f in glob.glob("../books/*.txt")
+    f.replace("../books/", "").replace(".txt", "") for f in glob.glob("../books/*.txt")
 ]
 books = {}
 for title, filepath in tqdm(zip(titles, filepaths)):
@@ -216,9 +218,7 @@ book_tokens2 = {}
 for title, book in tqdm(books.items()):
     book_tokens2[title] = tokenize_book2(book)
 
-books_df = (
-    pd.DataFrame.from_dict(book_tokens2, orient="index").fillna(0).astype(int)
-)
+books_df = pd.DataFrame.from_dict(book_tokens2, orient="index").fillna(0).astype(int)
 word_totals = books_df.sum(axis=0)
 sorted_columns = word_totals.sort_values(ascending=False).index
 # Reorder the DataFrame columns
